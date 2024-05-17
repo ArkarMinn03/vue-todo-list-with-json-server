@@ -1,0 +1,72 @@
+//App.vue
+
+<template>
+  <div>
+    <h3>My To-do List</h3>
+    <h3>Add new Tasks</h3>
+    <form @submit.prevent="addTask">
+      <input type="text" v-model="newTask.name" placeholder="Add new tasks here.">
+      <button type="submit">+ Add</button>
+    </form>
+    <ul>
+      <li v-for="task in tasks" :key="task.id">
+        <input type="checkbox" v-model="task.finished">&nbsp;
+        <span :class="{ done: task.finished }">{{ task.name }}</span>&nbsp;&nbsp;
+        <button @click="editTask(task)">Edit</button>&nbsp;
+        <button @click="deleteTask(task.id)">{{ task.id }}Delete</button>
+      </li>
+    </ul>
+  </div>
+  <div v-if="editingTask">
+    <form @submit.prevent="updateTask">
+      <input type="checkbox" v-model="editingTask.finished">&nbsp;
+      <input type="text" v-model="editingTask.name">&nbsp;&nbsp;
+      <button type="submit">Update</button>
+    </form>
+
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      tasks: [],
+      newTask: {
+        name: '',
+        finished: false
+      },
+      editingTask: null
+    }
+  },
+  methods: {
+    async fetchTasks() {
+      const response = await axios.get('http://localhost:3000/todoList')
+      this.tasks = response.data;
+    },
+    async addTask() {
+      const newId = this.tasks.length + 1;
+      const newTask = { id: newId, ...this.newTask }
+      const response = await axios.post('http://localhost:3000/todoList', newTask)
+      this.tasks.push(response.data)
+      this.newTask.name = ''
+      this.newTask.finished = false
+    },
+    editTask(task) {
+      this.editingTask = { ...task }
+    },
+    updateTask() {
+
+    },
+    async deleteTask(id) {
+      await axios.delete(`http://localhost:3000/todoList/${id}`)
+      this.tasks = this.tasks.filter(task => task.id != id)
+    }
+  },
+  created() {
+    this.fetchTasks()
+  }
+}
+</script>
