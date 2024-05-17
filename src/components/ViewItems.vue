@@ -15,7 +15,7 @@
         </div>
       </li>
     </ul>
-    <EditItem v-if="editingTask" :task="editingTask" @task-edited="handleTaskUpdated" />
+    <EditItem v-if="editingTask" :task="editingTask" @task-edited="handleTaskUpdated" @edit-cancel="handleEditCancel" />
   </div>
 </template>
 
@@ -42,6 +42,9 @@ export default {
     async deleteTask(id) {
       await axios.delete(`http://localhost:3000/todoList/${id}`)
       this.$emit('task-deleted');
+    },
+    handleEditCancel() {
+      this.editingTask = null;
     },
     handleTaskUpdated() {
       this.editingTask = null;

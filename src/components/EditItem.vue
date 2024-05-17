@@ -4,6 +4,7 @@
     <form @submit.prevent="updateTask">
       <div class="input-group">
         <input class="form-control" v-model="task.name" required>
+        <button class="btn btn-outline-secondary" type="button" @click="cancelEdit">Cancel</button>
         <button class="btn btn-outline-success" type="submit">Update</button>
       </div>
     </form>
@@ -21,6 +22,9 @@ export default {
     async updateTask() {
       await axios.put(`http://localhost:3000/todoList/${this.task.id}`, this.task)
       this.$emit('task-edited')
+    },
+    cancelEdit() {
+      this.$emit('edit-cancel')
     }
   }
 }
